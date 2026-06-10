@@ -44,14 +44,32 @@ def run(
         equity = equity.iloc[:, 0]
     equity.name = "equity"
 
-    trades = _normalize_trades(pf, symbols, weights.index)
+    trades = _normalize_trades(pf, close, weights.index)
     return equity, trades
 
 
-def _normalize_trades(pf, symbols: list[str], index: pd.DatetimeIndex) -> pd.DataFrame:
-    raw = pf.trades.records_readable
+def _normalize_trades(pf, close: pd.DataFrame, index: pd.DatetimeIndex) -> pd.DataFrame:
+    raw = pf.trades.records_readable.copy()
     if len(raw) == 0:
         return pd.DataFrame(columns=TRADE_COLUMNS)
+
+    # vectorbt leaves still-open trades with NaN PnL/Return/exit; close them
+    # at the final bar's close (mark-to-market) so metrics see real numbers
+    # and both engines treat end-of-data positions the same way.
+    open_mask = raw["Status"].astype(str).str.lower() == "open"
+    if open_mask.any():
+        last_close = raw.loc[open_mask, "Column"].map(
+            lambda col: float(close[str(col[-1]) if isinstance(col, tuple) else str(col)].iloc[-1])
+        )
+        raw.loc[open_mask, "Exit Timestamp"] = index[-1]
+        raw.loc[open_mask, "Avg Exit Price"] = last_close
+        raw.loc[open_mask, "PnL"] = (
+            last_close - raw.loc[open_mask, "Avg Entry Price"]
+        ) * raw.loc[open_mask, "Size"] - raw.loc[open_mask, "Entry Fees"]
+        raw.loc[open_mask, "Return"] = raw.loc[open_mask, "PnL"] / (
+            raw.loc[open_mask, "Avg Entry Price"] * raw.loc[open_mask, "Size"]
+        )
+        raw.loc[open_mask, "Exit Fees"] = raw.loc[open_mask, "Exit Fees"].fillna(0.0)
 
     def _symbol(col: object) -> str:
         # vectorbt encodes the column as the symbol name (or a tuple when grouped)
