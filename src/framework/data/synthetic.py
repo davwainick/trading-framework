@@ -44,6 +44,28 @@ def make_ohlcv(
     )
 
 
+def make_multi_ohlcv(
+    trends: dict[str, float],
+    n_bars: int = 600,
+    seed: int = 42,
+    start: str = "2015-01-01",
+    vol: float = 0.01,
+) -> dict[str, pd.DataFrame]:
+    """One seeded OHLCV frame per symbol on a shared business-day index.
+
+    ``trends`` maps symbol -> per-bar drift, so tests can engineer relative
+    momentum (winners vs losers, or an all-loser universe) deterministically.
+    Each symbol's seed is derived from ``seed`` and its position in the dict,
+    keeping the frames independent but the whole dict reproducible.
+    """
+    return {
+        symbol: make_ohlcv(
+            n_bars=n_bars, seed=seed + i, start=start, trend=trend, vol=vol
+        )
+        for i, (symbol, trend) in enumerate(trends.items())
+    }
+
+
 def make_trending_ohlcv(
     n_bars: int = 400,
     seed: int = 7,
