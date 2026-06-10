@@ -36,6 +36,8 @@ def load_ohlcv(
     sorted, de-duplicated ``DatetimeIndex``, sliced to ``[start, end]``.
     """
     directory = Path(data_dir) if data_dir is not None else DEFAULT_DATA_DIR
+    if not directory.is_absolute():
+        directory = REPO_ROOT / directory
     out: dict[str, pd.DataFrame] = {}
     for symbol in symbols:
         path = directory / f"{symbol.upper()}.parquet"
