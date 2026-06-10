@@ -71,7 +71,12 @@ def _normalize(
     df = df[~df.index.duplicated(keep="last")].sort_index()
 
     if start is not None:
-        df = df.loc[pd.Timestamp(start, tz="UTC") :]
+        df = df.loc[_utc(start) :]
     if end is not None:
-        df = df.loc[: pd.Timestamp(end, tz="UTC")]
+        df = df.loc[: _utc(end)]
     return df
+
+
+def _utc(value: str | pd.Timestamp) -> pd.Timestamp:
+    ts = pd.Timestamp(value)
+    return ts.tz_localize("UTC") if ts.tz is None else ts.tz_convert("UTC")

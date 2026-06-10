@@ -93,7 +93,7 @@ def _normalize_trades(raw: pd.DataFrame, symbol: str) -> pd.DataFrame:
             "pnl": raw["PnL"].astype(float),
             "return_pct": raw["ReturnPct"].astype(float),
             "bars_held": (raw["ExitBar"] - raw["EntryBar"]).astype(int),
-            "fees": float("nan"),  # folded into fill prices by backtesting.py
+            "fees": float("nan"),  # charged against cash by backtesting.py, not broken out
         }
     )
     return trades[TRADE_COLUMNS].sort_values("entry_time").reset_index(drop=True)
