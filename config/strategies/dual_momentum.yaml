@@ -1,0 +1,25 @@
+# Example config for the dual_momentum strategy (module lives in
+# src/framework/strategies/private/, which is local-only — this config is
+# committed as a reference and will not resolve on a fresh clone).
+#
+# `end:` marks the 70% in-sample boundary (history measured 2010-01-04 to
+# 2026-06-10); the rest is reserved out-of-sample for Phase 5 validation.
+
+strategy: dual_momentum
+symbols:
+  - SPY
+  - QQQ
+  - IEF
+  - GLD
+  - TLT
+  - EEM
+  - SHY    # cash-proxy benchmark for the absolute filter; never held
+start: "2010-01-01"
+end: "2021-06-30"
+
+params:
+  lookback_long: 252
+  lookback_short: 21
+  # top_n: 5 (not the default 3): the charter caps any position at 20%,
+  # so 3 x 33% would be clipped to 60% gross — permanent cash drag.
+  top_n: 5
