@@ -14,6 +14,8 @@ etfs:
   - TLT    # 20y+ treasuries
   - IEF    # 7-10y treasuries
   - GLD    # gold
+  - EEM    # emerging markets
+  - SHY    # 1-3y treasuries (cash proxy for absolute-momentum filters)
 
 # Large-cap crypto via Yahoo tickers (Alpaca uses BTC/USD, mapping is in the
 # live layer, Phase 6). Highest-risk sleeve per the charter: max 20% exposure.
