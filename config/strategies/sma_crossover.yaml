@@ -1,0 +1,13 @@
+# Example run-config for the committed SMA crossover reference strategy.
+strategy: sma_crossover
+symbols: [SPY]
+start: "2018-01-01"
+end: null                        # null = latest available
+
+params:
+  fast: 20
+  slow: 100
+
+# Any global key can be overridden here, e.g.:
+# costs:
+#   commission_pct: 0.001

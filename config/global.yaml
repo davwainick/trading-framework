@@ -1,0 +1,28 @@
+# Framework-wide defaults. Any key here can be overridden per-strategy
+# in config/strategies/<name>.yaml (the strategy file wins).
+
+data:
+  ohlcv_dir: data/ohlcv          # relative to repo root
+
+results_dir: results
+
+costs:
+  commission_pct: 0.0005         # 5 bps per side
+  slippage_pct: 0.0005           # 5 bps, applied to the fill price
+
+# Charter risk limits (Phase 0) — enforced centrally by the backtest runner.
+portfolio:
+  initial_cash: 100000
+  max_position_pct: 0.20
+  max_positions: 10
+  allow_leverage: false
+
+execution:
+  fill: next_open                # signal at bar t close -> fill at bar t+1 open
+  frequency: daily
+
+benchmark:
+  symbol: SPY                    # every backtest is compared to buy-and-hold of this
+
+backtest:
+  engine: vectorbt               # "vectorbt" (primary) or "backtesting" (cross-check)
