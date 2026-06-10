@@ -1,0 +1,22 @@
+# Asset universe, by charter sleeve (one asset class per strategy).
+# `tf data download` fetches every sleeve; pass --sleeve to limit.
+
+# Liquid, large US ETFs — the charter's "start here" sleeve.
+etfs:
+  - SPY    # S&P 500 (also the benchmark)
+  - QQQ    # Nasdaq-100
+  - IWM    # Russell 2000
+  - DIA    # Dow 30
+  - XLK    # tech sector
+  - XLF    # financials
+  - XLE    # energy
+  - XLV    # health care
+  - TLT    # 20y+ treasuries
+  - IEF    # 7-10y treasuries
+  - GLD    # gold
+
+# Large-cap crypto via Yahoo tickers (Alpaca uses BTC/USD, mapping is in the
+# live layer, Phase 6). Highest-risk sleeve per the charter: max 20% exposure.
+crypto:
+  - BTC-USD
+  - ETH-USD

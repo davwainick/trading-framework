@@ -51,11 +51,18 @@ Key invariants, enforced centrally and covered by tests:
 Requires [uv](https://docs.astral.sh/uv/) and Python 3.12 (uv will fetch it).
 
 ```bash
-git clone <repo> && cd TradingFrameworkCode
+git clone <repo> && cd trading-framework
 uv sync                                   # create .venv, install pinned deps
 uv run pytest -q                          # verify: all tests pass offline
-uv run python scripts/bootstrap_data.py   # fetch SPY daily history (or --synthetic)
+uv run tf data download                   # fetch the universe (config/universe.yaml)
+uv run tf data check                      # re-run data-quality checks anytime
 ```
+
+The download pipeline quality-checks everything it fetches (missing dates,
+zero/negative prices, gap/spike detection, OHLC consistency, duplicates) and
+refuses to call a symbol OK otherwise. See `docs/data.md` for what the free
+data can and cannot honestly support — in particular why single-name equity
+backtests are off-limits until a survivorship-bias-free source is wired in.
 
 ## Run the example strategy
 
@@ -110,13 +117,15 @@ harness code changes required.
 ## Repository layout
 
 ```
-config/            global.yaml + per-strategy run configs (private/ gitignored)
+config/            global.yaml, universe.yaml, per-strategy configs (private/ gitignored)
 data/ohlcv/        Parquet OHLCV, one file per symbol (gitignored)
-docs/engines.md    when to use vectorbt vs backtesting.py
-scripts/           bootstrap_data.py (placeholder until the Phase 2 data layer)
+docs/              engines.md (vectorbt vs backtesting.py), data.md (coverage & limits)
 src/framework/
   config.py        pydantic config models, YAML deep-merge
-  data/            load_ohlcv() — the single data entry point; synthetic generator
+  data/            load_ohlcv() — the single data entry point
+    sources/       vendor adapters (yfinance now; Norgate drops in later)
+    quality.py     data-quality checks behind `tf data check`
+    download.py    fetch -> normalize -> check -> Parquet pipeline
   strategies/      Strategy ABC, registry, examples/, private/ (gitignored)
   backtest/        runner, engines/, metrics, BacktestResult
   validation/      (Phase 4–5: walk-forward, Monte Carlo, sensitivity)
