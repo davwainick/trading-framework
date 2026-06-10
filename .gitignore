@@ -1,0 +1,36 @@
+# environments / build
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# secrets & local state
+.env
+.env.*
+
+# market data, logs, backtest artifacts (contents only; .gitkeep survives)
+data/**
+!data/**/
+!data/**/.gitkeep
+logs/*
+!logs/.gitkeep
+results/*
+!results/.gitkeep
+
+# private strategies — code and configs (the SMA example in examples/ IS committed)
+src/framework/strategies/private/*
+!src/framework/strategies/private/__init__.py
+!src/framework/strategies/private/README.md
+config/strategies/private/*
+!config/strategies/private/.gitkeep
+
+# notebooks: keep notebooks, drop checkpoints
+.ipynb_checkpoints/
+
+# tooling caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
